@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>json-renderers-run-options | Pure Declarative Feature & Option Runner</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --bg-body: #ffffff;
+            --bg-subtle: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.95);
+
+            --text-title: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+
+            --primary: #4f46e5;
+            --primary-light: #eef2ff;
+            --primary-glow: rgba(79, 70, 229, 0.25);
+
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-purple: #8b5cf6;
+
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-body);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+                radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 28px 28px;
+        }
+
+        .spotlight-follower {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, rgba(6, 182, 212, 0.03) 40%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            transition: width 0.3s ease, height 0.3s ease;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar-brand span {
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .hero {
+            padding: 5rem 0 3.5rem;
+            position: relative;
+        }
+
+        .gradient-pill {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border: 1px solid #c7d2fe;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+            transition: transform 0.2s ease;
+        }
+        .gradient-pill:hover {
+            transform: scale(1.05);
+        }
+
+        .hero-title {
+            font-size: clamp(2.3rem, 5vw, 3.8rem);
+            font-weight: 800;
+            color: var(--text-title);
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tilt-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+        }
+
+        .tilt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 35px -12px rgba(79, 70, 229, 0.14);
+            border-color: #cbd5e1;
+        }
+
+        .feature-card {
+            border-top: 4px solid var(--primary);
+            height: 100%;
+        }
+        .feature-card.feat-search { border-top-color: var(--accent-emerald); }
+        .feature-card.feat-serial { border-top-color: var(--primary); }
+        .feature-card.feat-options { border-top-color: var(--accent-cyan); }
+
+        .stat-badge {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s ease;
+        }
+        .stat-badge:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        .code-box {
+            background: #0f172a;
+            color: #f1f5f9;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            color: #fff;
+        }
+
+        /* Simulator Styling */
+        .simulator-box {
+            background: #ffffff;
+            border: 2px solid #e0e7ff;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(79, 70, 229, 0.08);
+            overflow: hidden;
+        }
+        .sim-header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            color: #ffffff;
+            padding: 1.25rem 1.75rem;
+        }
+
+        .option-toggle-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .option-toggle-card:hover {
+            border-color: var(--primary);
+            background: #ffffff;
+        }
+        .option-toggle-card.active {
+            border-color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .tree-preview {
+            background: #090d16;
+            color: #38bdf8;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            padding: 1.25rem;
+            border-radius: 10px;
+            max-height: 420px;
+            overflow-y: auto;
+        }
+
+        .live-preview-box {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            min-height: 250px;
+        }
+
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 4rem 0 2rem;
+            margin-top: 5rem;
+        }
+        footer a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        footer a:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="spotlight-follower" id="spotlight"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="./index.html">
+                <i class="bi bi-toggle-on text-primary fs-3"></i>
+                <span class="text-dark">json-renderers-run-options</span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1">v2.0 (Latest)</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold active text-primary" href="./index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-secondary" href="./pages/the-story.html">The Story</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-secondary" href="./pages/architecture.html">Architecture (V2)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-secondary" href="./pages/api-guide.html">API Guide</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold text-secondary" href="./pages/samples-showcase.html">Samples & Live Demos</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-outline-dark btn-sm rounded-pill px-3" href="https://github.com/keshavsoft/json-renderers-run-options" target="_blank">
+                            <i class="bi bi-github me-1"></i> GitHub
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-danger btn-sm rounded-pill px-3" href="https://www.npmjs.com/package/json-renderers-run-options" target="_blank">
+                            <i class="bi bi-box me-1"></i> npm
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero text-center">
+        <div class="container">
+            <div class="mb-3">
+                <span class="gradient-pill">
+                    <i class="bi bi-stars"></i> KeshavSoft Declarative UI Architecture • V2 Engine
+                </span>
+            </div>
+            <h1 class="hero-title mb-3">
+                Pure Declarative Feature & Option Runner<br>
+                for <span class="gradient-text">JSON Renderers</span>
+            </h1>
+            <p class="lead text-secondary mx-auto mb-4" style="max-width: 800px;">
+                Conditionally enhances base JSON-DOM Abstract Syntax Trees with optional UI capabilities—such as live search bars, serial numbering, and row action buttons—using zero imperative code and safe JSONPath targeting.
+            </p>
+            <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
+                <a href="#simulator" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm" onclick="triggerConfetti()">
+                    <i class="bi bi-play-circle-fill me-2"></i> Try Interactive Option Runner
+                </a>
+                <a href="./pages/the-story.html" class="btn btn-light btn-lg rounded-pill px-4 border">
+                    <i class="bi bi-compass me-2"></i> Why This Repo?
+                </a>
+                <a href="./pages/api-guide.html" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                    <i class="bi bi-journal-code me-2"></i> Read API Guide
+                </a>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="row g-3 justify-content-center text-start">
+                <div class="col-6 col-md-3">
+                    <div class="stat-badge">
+                        <div class="stat-number">V2</div>
+                        <div class="fw-semibold text-dark">JSONPath Engine</div>
+                        <small class="text-muted">Target validation via jsonpathly</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-badge">
+                        <div class="stat-number">3 Key</div>
+                        <div class="fw-semibold text-dark">Standard Options</div>
+                        <small class="text-muted">Search, Serial, Action Buttons</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-badge">
+                        <div class="stat-number">0 DOM</div>
+                        <div class="fw-semibold text-dark">Pure AST Operations</div>
+                        <small class="text-muted">Safe in Node.js, Workers & Browser</small>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-badge">
+                        <div class="stat-number">100%</div>
+                        <div class="fw-semibold text-dark">Non-Destructive</div>
+                        <small class="text-muted">Only targets valid mount points</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Options Simulator -->
+    <section class="py-5 bg-subtle" id="simulator">
+        <div class="container">
+            <div class="text-center mb-4">
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold mb-2">Live Visualizer</span>
+                <h2 class="fw-bold">Experience Dynamic Feature Injection Live</h2>
+                <p class="text-muted">Toggle the options below to witness how <code>runOptions</code> mutates the base table AST in real-time without writing any DOM logic.</p>
+            </div>
+
+            <div class="simulator-box">
+                <div class="sim-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-sliders2-vertical fs-5 text-warning"></i>
+                        <span class="fw-bold">Options Playground Canvas</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-light rounded-pill" onclick="resetOptions()">
+                            <i class="bi bi-arrow-counterclockwise"></i> Reset Defaults
+                        </button>
+                        <button class="btn btn-sm btn-success rounded-pill px-3" onclick="triggerConfetti()">
+                            <i class="bi bi-magic"></i> Celebrate Clean Code
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <!-- Option Switches -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="option-toggle-card active" id="cardSearch" onclick="toggleOption('search')">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-search text-success fs-5"></i>
+                                        <div>
+                                            <div class="fw-bold text-dark">Search Bar Option</div>
+                                            <small class="text-muted"><code>showSearch: true</code></small>
+                                        </div>
+                                    </div>
+                                    <input class="form-check-input" type="checkbox" id="checkSearch" checked onchange="toggleOption('search')">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="option-toggle-card active" id="cardSerial" onclick="toggleOption('serial')">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-123 text-primary fs-5"></i>
+                                        <div>
+                                            <div class="fw-bold text-dark">Serial Number Column</div>
+                                            <small class="text-muted"><code>showSerial: true</code></small>
+                                        </div>
+                                    </div>
+                                    <input class="form-check-input" type="checkbox" id="checkSerial" checked onchange="toggleOption('serial')">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="option-toggle-card active" id="cardOptions" onclick="toggleOption('options')">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-gear-fill text-cyan fs-5" style="color: #06b6d4;"></i>
+                                        <div>
+                                            <div class="fw-bold text-dark">Action Buttons Column</div>
+                                            <small class="text-muted"><code>showOptions: true</code></small>
+                                        </div>
+                                    </div>
+                                    <input class="form-check-input" type="checkbox" id="checkOptions" checked onchange="toggleOption('options')">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Split View: Mutated AST vs Live Rendered UI -->
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small fw-bold text-muted font-monospace"><i class="bi bi-code-slash me-1"></i> MUTATED AST (JSON TREE)</span>
+                                <span class="badge bg-dark font-monospace text-info" id="nodeCountBadge">3 Features Active</span>
+                            </div>
+                            <pre class="tree-preview" id="jsonOutput"><code>Loading AST...</code></pre>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small fw-bold text-muted font-monospace"><i class="bi bi-display me-1"></i> LIVE HTML DOM RENDERING</span>
+                                <span class="badge bg-success font-monospace" id="renderBadge">Render Sync: OK</span>
+                            </div>
+                            <div class="live-preview-box shadow-sm" id="liveRenderContainer">
+                                <!-- Dynamic Render output -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Three Core Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold mb-2">Core Capabilities</span>
+                <h2 class="fw-bold">What json-renderers-run-options Delivers</h2>
+                <p class="text-muted mx-auto" style="max-width: 650px;">
+                    Three foundational enhancement pipelines engineered to plug cleanly into any declarative component blueprint.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Search -->
+                <div class="col-md-4">
+                    <div class="tilt-card feature-card feat-search">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="badge bg-success-subtle text-success fs-6 fw-bold px-3 py-1 rounded-pill">Search Pipeline</span>
+                            <i class="bi bi-search text-success fs-4"></i>
+                        </div>
+                        <h4 class="fw-bold">Search Bar Integration</h4>
+                        <p class="text-muted small">
+                            Injects responsive search headers, search labels, helper text, and filter input boxes above tabular or card structures.
+                        </p>
+                        <div class="p-2 bg-light border rounded small font-monospace text-dark mb-3">
+                            options.showSearch: true
+                        </div>
+                        <ul class="list-unstyled small text-secondary">
+                            <li><i class="bi bi-check2-circle text-success me-1"></i> Mounts to header container / table root</li>
+                            <li><i class="bi bi-check2-circle text-success me-1"></i> Configured via <code>optionDefs.search</code></li>
+                            <li><i class="bi bi-check2-circle text-success me-1"></i> Verified with JSONPath mount checks</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Serial -->
+                <div class="col-md-4">
+                    <div class="tilt-card feature-card feat-serial">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="badge bg-primary-subtle text-primary fs-6 fw-bold px-3 py-1 rounded-pill">Serial Pipeline</span>
+                            <i class="bi bi-123 text-primary fs-4"></i>
+                        </div>
+                        <h4 class="fw-bold">Serial Numbering Column</h4>
+                        <p class="text-muted small">
+                            Prepends serial count headers (<code>&lt;th&gt;#&lt;/th&gt;</code>) and serial row counter cells dynamically without mutating raw data rows.
+                        </p>
+                        <div class="p-2 bg-light border rounded small font-monospace text-dark mb-3">
+                            options.showSerial: true (or .serial)
+                        </div>
+                        <ul class="list-unstyled small text-secondary">
+                            <li><i class="bi bi-check2-circle text-primary me-1"></i> Targets thead row and each tbody row</li>
+                            <li><i class="bi bi-check2-circle text-primary me-1"></i> Preserves collection column indices</li>
+                            <li><i class="bi bi-check2-circle text-primary me-1"></i> Configured via <code>optionDefs.serial</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Options / Action Buttons -->
+                <div class="col-md-4">
+                    <div class="tilt-card feature-card feat-options">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="badge bg-info-subtle text-info-emphasis fs-6 fw-bold px-3 py-1 rounded-pill">Options Pipeline</span>
+                            <i class="bi bi-gear-fill text-info fs-4"></i>
+                        </div>
+                        <h4 class="fw-bold">Row Actions Column</h4>
+                        <p class="text-muted small">
+                            Appends an action column featuring customizable button groups (View, Edit, Delete, Details) into table rows.
+                        </p>
+                        <div class="p-2 bg-light border rounded small font-monospace text-dark mb-3">
+                            options.showOptions: true (or .options)
+                        </div>
+                        <ul class="list-unstyled small text-secondary">
+                            <li><i class="bi bi-check2-circle text-info me-1"></i> Injects <code>&lt;th&gt;Actions&lt;/th&gt;</code> and button cells</li>
+                            <li><i class="bi bi-check2-circle text-info me-1"></i> Fully customizable action templates</li>
+                            <li><i class="bi bi-check2-circle text-info me-1"></i> Configured via <code>optionDefs.options</code></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Usage Guide -->
+    <section class="py-5 bg-subtle">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-5">
+                    <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold mb-2">Developer Experience</span>
+                    <h2 class="fw-bold">Simple, Clean & Expressive</h2>
+                    <p class="text-secondary">
+                        Transform your component blueprint in one call. Pass your base AST, specify which features you want, and provide definition instructions.
+                    </p>
+                    <div class="d-flex flex-column gap-3 mt-4">
+                        <div class="d-flex gap-3 align-items-start">
+                            <i class="bi bi-check-circle-fill text-primary fs-5"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Standard ESM Import</h6>
+                                <p class="text-muted small mb-0">Use modern ECMAScript module imports in Node.js 18+ and modern browsers.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3 align-items-start">
+                            <i class="bi bi-check-circle-fill text-primary fs-5"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Safe Path Filtering (V2)</h6>
+                                <p class="text-muted small mb-0">Uses <code>jsonpathly</code> to ensure instructions only run against valid target destinations.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-3 align-items-start">
+                            <i class="bi bi-check-circle-fill text-primary fs-5"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1">Built for the KeshavSoft Ecosystem</h6>
+                                <p class="text-muted small mb-0">Pairs natively with <code>declarative-definitions</code>, <code>spec-repo</code>, and <code>json-instruction-single</code>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="code-box shadow">
+                        <button class="copy-btn" onclick="copySnippet()"><i class="bi bi-clipboard"></i> Copy</button>
+                        <pre><code id="codeSnippetContent">import runOptions from "json-renderers-run-options";
+import definitions from "declarative-definitions";
+import { spec } from "spec-repo";
+
+// 1. Obtain a clone of your base component AST
+const base = structuredClone(spec.tableSimple);
+
+// 2. Run declarative optional features
+const finalAst = runOptions({
+    base,
+    options: {
+        showSearch: true,   // Injects search bar
+        showSerial: true,   // Injects '#' column
+        showOptions: true   // Injects action buttons
+    },
+    optionDefs: definitions.table.simple.options,
+    showLog: false          // Enable debug logging
+});
+
+console.log(finalAst);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row g-4 justify-content-between">
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-toggle-on text-primary fs-4"></i>
+                        <h5 class="text-white fw-bold mb-0">json-renderers-run-options</h5>
+                    </div>
+                    <p class="small text-muted">
+                        Pure declarative feature and option instruction runner for JSON renderers in the KeshavSoft ecosystem.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="https://github.com/keshavsoft/json-renderers-run-options" class="badge bg-dark border border-secondary text-secondary p-2" target="_blank">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                        <a href="https://www.npmjs.com/package/json-renderers-run-options" class="badge bg-dark border border-secondary text-secondary p-2" target="_blank">
+                            <i class="bi bi-box"></i> npm
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="row g-3">
+                        <div class="col-sm-4">
+                            <h6 class="text-white fw-bold">Documentation</h6>
+                            <ul class="list-unstyled small">
+                                <li><a href="./pages/the-story.html">The Story & Purpose</a></li>
+                                <li><a href="./pages/architecture.html">Architecture (V2)</a></li>
+                                <li><a href="./pages/api-guide.html">API Reference</a></li>
+                                <li><a href="./pages/samples-showcase.html">Samples & Demos</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="text-white fw-bold">Ecosystem</h6>
+                            <ul class="list-unstyled small">
+                                <li><a href="https://github.com/keshavsoft/declarative-definitions" target="_blank">declarative-definitions</a></li>
+                                <li><a href="https://github.com/keshavsoft/declarative-instructions" target="_blank">declarative-instructions</a></li>
+                                <li><a href="https://github.com/keshavsoft/json-renderers-run-instructions-steps" target="_blank">json-renderers-run-instructions-steps</a></li>
+                                <li><a href="https://github.com/keshavsoft/json-instruction-single" target="_blank">json-instruction-single</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-4">
+                            <h6 class="text-white fw-bold">About KeshavSoft</h6>
+                            <p class="small text-muted">
+                                Pioneering declarative JSON-to-DOM architectures with zero imperative DOM manipulation.
+                            </p>
+                            <small class="text-muted">MIT © 2026 KeshavSoft</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Interactive Script -->
+    <script>
+        // Spotlight Follower
+        const spotlight = document.getElementById('spotlight');
+        window.addEventListener('mousemove', (e) => {
+            spotlight.style.left = e.clientX + 'px';
+            spotlight.style.top = e.clientY + 'px';
+        });
+
+        // Confetti trigger
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 70,
+                    spread: 60,
+                    origin: { y: 0.7 }
+                });
+            }
+        }
+
+        // Copy snippet
+        function copySnippet() {
+            const text = document.getElementById('codeSnippetContent').innerText;
+            navigator.clipboard.writeText(text);
+            const btn = document.querySelector('.copy-btn');
+            btn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="bi bi-clipboard"></i> Copy';
+            }, 2000);
+        }
+
+        // State for Simulator
+        const activeOptions = {
+            search: true,
+            serial: true,
+            options: true
+        };
+
+        const sampleRows = [
+            { id: 101, name: "Pooja Sharma", role: "Frontend Architect", department: "Engineering", status: "Active" },
+            { id: 102, name: "Arun Patel", role: "DevOps Engineer", department: "Infrastructure", status: "Active" },
+            { id: 103, name: "Sneha Reddy", role: "Product Manager", department: "Product", status: "Pending" }
+        ];
+
+        function toggleOption(type) {
+            const check = document.getElementById('check' + capitalize(type));
+            const card = document.getElementById('card' + capitalize(type));
+            
+            // Toggle state
+            activeOptions[type] = !activeOptions[type];
+            check.checked = activeOptions[type];
+
+            if (activeOptions[type]) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+
+            renderSimulator();
+        }
+
+        function resetOptions() {
+            activeOptions.search = true;
+            activeOptions.serial = true;
+            activeOptions.options = true;
+
+            ['Search', 'Serial', 'Options'].forEach(name => {
+                document.getElementById('check' + name).checked = true;
+                document.getElementById('card' + name).classList.add('active');
+            });
+
+            renderSimulator();
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function renderSimulator() {
+            // Build AST representation
+            const ast = {
+                tag: "div",
+                attributes: { class: "table-container" },
+                children: []
+            };
+
+            // If search is active
+            if (activeOptions.search) {
+                ast.children.push({
+                    tag: "div",
+                    attributes: { class: "search-frame mb-3 d-flex gap-2" },
+                    children: [
+                        {
+                            tag: "input",
+                            attributes: { type: "text", class: "form-control form-control-sm", placeholder: "Search records..." }
+                        },
+                        {
+                            tag: "button",
+                            attributes: { class: "btn btn-sm btn-primary" },
+                            children: [{ tag: "text", content: "Search" }]
+                        }
+                    ]
+                });
+            }
+
+            // Table Structure
+            const headerCells = [];
+            if (activeOptions.serial) {
+                headerCells.push({ tag: "th", attributes: { scope: "col", style: "width: 50px;" }, children: [{ tag: "text", content: "#" }] });
+            }
+            headerCells.push(
+                { tag: "th", attributes: { scope: "col" }, children: [{ tag: "text", content: "Name" }] },
+                { tag: "th", attributes: { scope: "col" }, children: [{ tag: "text", content: "Role" }] },
+                { tag: "th", attributes: { scope: "col" }, children: [{ tag: "text", content: "Department" }] },
+                { tag: "th", attributes: { scope: "col" }, children: [{ tag: "text", content: "Status" }] }
+            );
+            if (activeOptions.options) {
+                headerCells.push({ tag: "th", attributes: { scope: "col", style: "width: 140px;" }, children: [{ tag: "text", content: "Actions" }] });
+            }
+
+            const bodyRows = sampleRows.map((row, index) => {
+                const cells = [];
+                if (activeOptions.serial) {
+                    cells.push({ tag: "td", attributes: { class: "fw-bold text-muted" }, children: [{ tag: "text", content: String(index + 1) }] });
+                }
+                cells.push(
+                    { tag: "td", children: [{ tag: "text", content: row.name }] },
+                    { tag: "td", children: [{ tag: "text", content: row.role }] },
+                    { tag: "td", children: [{ tag: "text", content: row.department }] },
+                    { tag: "td", children: [{ tag: "span", attributes: { class: row.status === 'Active' ? 'badge bg-success-subtle text-success' : 'badge bg-warning-subtle text-warning' }, children: [{ tag: "text", content: row.status }] }] }
+                );
+                if (activeOptions.options) {
+                    cells.push({
+                        tag: "td",
+                        children: [{
+                            tag: "div",
+                            attributes: { class: "btn-group btn-group-sm" },
+                            children: [
+                                { tag: "button", attributes: { class: "btn btn-outline-primary btn-sm" }, children: [{ tag: "text", content: "Edit" }] },
+                                { tag: "button", attributes: { class: "btn btn-outline-danger btn-sm" }, children: [{ tag: "text", content: "Del" }] }
+                            ]
+                        }]
+                    });
+                }
+                return { tag: "tr", children: cells };
+            });
+
+            ast.children.push({
+                tag: "table",
+                attributes: { class: "table table-hover table-bordered align-middle mb-0" },
+                children: [
+                    { tag: "thead", attributes: { class: "table-light" }, children: [{ tag: "tr", children: headerCells }] },
+                    { tag: "tbody", children: bodyRows }
+                ]
+            });
+
+            // Update AST Code display
+            document.getElementById('jsonOutput').innerHTML = '<code>' + escapeHtml(JSON.stringify(ast, null, 2)) + '</code>';
+
+            // Update badge count
+            const activeCount = Object.values(activeOptions).filter(Boolean).length;
+            document.getElementById('nodeCountBadge').innerText = activeCount + ' Features Active';
+
+            // Update Live Rendered HTML
+            let html = '';
+            if (activeOptions.search) {
+                html += `
+                <div class="row g-2 mb-3 align-items-center">
+                    <div class="col">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" class="form-control" placeholder="Search team members by name or role...">
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-sm btn-primary"><i class="bi bi-filter"></i> Filter</button>
+                    </div>
+                </div>`;
+            }
+
+            html += `<div class="table-responsive"><table class="table table-hover table-bordered align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        ${activeOptions.serial ? '<th style="width: 50px;">#</th>' : ''}
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        ${activeOptions.options ? '<th style="width: 140px;" class="text-center">Actions</th>' : ''}
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            sampleRows.forEach((item, idx) => {
+                html += `
+                    <tr>
+                        ${activeOptions.serial ? `<td class="fw-bold text-muted">${idx + 1}</td>` : ''}
+                        <td class="fw-semibold text-dark">${item.name}</td>
+                        <td class="text-secondary">${item.role}</td>
+                        <td><span class="badge bg-light text-dark border">${item.department}</span></td>
+                        <td><span class="${item.status === 'Active' ? 'badge bg-success-subtle text-success' : 'badge bg-warning-subtle text-warning'}">${item.status}</span></td>
+                        ${activeOptions.options ? `
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary btn-sm" title="Edit"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-outline-danger btn-sm" title="Delete"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </td>` : ''}
+                    </tr>`;
+            });
+
+            html += `</tbody></table></div>`;
+            document.getElementById('liveRenderContainer').innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Initialize simulator on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSimulator();
+        });
+    </script>
+</body>
+
+</html>
