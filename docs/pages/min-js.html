@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>min.js Bundle & ZIP Download | json-renderers-run-options</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <!-- JSZip for dynamic ZIP generation in browser -->
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+    <style>
+        :root {
+            --font-main: 'Plus Jakarta Sans', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --primary: #4f46e5;
+            --primary-light: #eef2ff;
+            --text-title: #0f172a;
+            --text-body: #334155;
+            --border: #e2e8f0;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--text-body);
+            font-family: var(--font-main);
+            line-height: 1.65;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        .spotlight-follower {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .page-header {
+            padding: 4.5rem 0 3rem;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .card-custom {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            transition: all 0.25s ease;
+        }
+
+        .card-custom:hover {
+            box-shadow: 0 15px 30px -10px rgba(79, 70, 229, 0.12);
+            border-color: #cbd5e1;
+        }
+
+        .viewer-container {
+            background: #090d16;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+
+        .viewer-toolbar {
+            background: #0f172a;
+            padding: 0.85rem 1.25rem;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .code-display {
+            padding: 1.25rem;
+            margin: 0;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: #38bdf8;
+            max-height: 520px;
+            overflow-y: auto;
+            white-space: pre;
+            tab-size: 2;
+        }
+
+        .code-display.wrap-text {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .download-action-card {
+            border: 2px dashed #c7d2fe;
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 1.75rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .download-action-card:hover {
+            border-color: var(--primary);
+            background: #eef2ff;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 3rem 0;
+            margin-top: 5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="spotlight-follower" id="spotlight"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="../index.html">
+                <i class="bi bi-toggle-on text-primary fs-3"></i>
+                <span class="text-dark fw-bold">json-renderers-run-options</span>
+            </a>
+            <div class="collapse navbar-collapse" id="navContent">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                    <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./the-story.html">The Story</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./architecture.html">Architecture</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./api-guide.html">API Guide</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold text-secondary" href="./samples-showcase.html">Samples</a></li>
+                    <li class="nav-item"><a class="nav-link fw-semibold text-primary active" href="./bundle.html"><i class="bi bi-file-earmark-code me-1"></i> min.js & ZIP</a></li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-outline-dark btn-sm rounded-pill px-3" href="https://github.com/keshavsoft/json-renderers-run-options" target="_blank">
+                            <i class="bi bi-github me-1"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="page-header text-center">
+        <div class="container">
+            <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold mb-2">Standalone Distribution</span>
+            <h1 class="fw-bold text-dark mb-3">Copy min.js & Download ZIP Bundle</h1>
+            <p class="text-muted mx-auto" style="max-width: 720px;">
+                Direct access to the pre-bundled, production-ready minified distribution for offline applications, vanilla HTML projects, and CDN hosting.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+
+                <!-- Download & Actions Cards Grid -->
+                <div class="row g-4 mb-4">
+                    <!-- Action 1: Copy min.js -->
+                    <div class="col-md-4">
+                        <div class="download-action-card h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <i class="bi bi-clipboard2-check-fill text-primary fs-1 mb-2"></i>
+                                <h5 class="fw-bold text-dark">Copy min.js</h5>
+                                <p class="text-muted small">
+                                    Copies the entire minified distribution script directly to your clipboard in one click.
+                                </p>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary w-100 rounded-pill fw-semibold shadow-sm" id="btnCopyMain" onclick="copyMinJs()">
+                                    <i class="bi bi-clipboard me-1"></i> Copy to Clipboard
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action 2: Download min.js file -->
+                    <div class="col-md-4">
+                        <div class="download-action-card h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <i class="bi bi-filetype-js text-success fs-1 mb-2"></i>
+                                <h5 class="fw-bold text-dark">Download min.js</h5>
+                                <p class="text-muted small">
+                                    Downloads the standalone <code>min.js</code> file ready for direct inclusion in HTML scripts.
+                                </p>
+                            </div>
+                            <div>
+                                <button class="btn btn-success w-100 rounded-pill fw-semibold shadow-sm" onclick="downloadJsFile()">
+                                    <i class="bi bi-download me-1"></i> Download .js File
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action 3: Download ZIP Archive -->
+                    <div class="col-md-4">
+                        <div class="download-action-card h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <i class="bi bi-file-earmark-zip-fill text-warning fs-1 mb-2"></i>
+                                <h5 class="fw-bold text-dark">Download ZIP Archive</h5>
+                                <p class="text-muted small">
+                                    Packages <code>min.js</code>, sample <code>index.html</code>, documentation, and metadata into a complete .zip.
+                                </p>
+                            </div>
+                            <div>
+                                <button class="btn btn-warning text-dark w-100 rounded-pill fw-semibold shadow-sm" id="btnZipDownload" onclick="downloadZipBundle()">
+                                    <i class="bi bi-archive me-1"></i> Download .zip Bundle
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Viewer Card -->
+                <div class="card-custom">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                        <div>
+                            <h4 class="fw-bold text-dark mb-1">
+                                <i class="bi bi-code-square text-primary me-2"></i> Bundle Inspector
+                            </h4>
+                            <span class="text-muted small">Inspecting distribution bundle file: <code>docs/dist/min.js</code></span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-dark font-monospace text-info px-3 py-2" id="fileStatsBadge">Size: ~32.8 KB</span>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary" onclick="toggleWrap()" id="btnWrap">
+                                    <i class="bi bi-text-wrap"></i> Wrap Text
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="copyMinJs()">
+                                    <i class="bi bi-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Viewer -->
+                    <div class="viewer-container shadow-sm">
+                        <div class="viewer-toolbar">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-secondary font-monospace" id="versionBadge">v2 (Latest)</span>
+                                <small class="text-muted font-monospace">docs/dist/min.js</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-light" onclick="selectAllCode()">
+                                    <i class="bi bi-check-all"></i> Select All
+                                </button>
+                                <button class="btn btn-sm btn-light" onclick="copyMinJs()">
+                                    <i class="bi bi-clipboard"></i> Copy All
+                                </button>
+                            </div>
+                        </div>
+                        <pre class="code-display" id="codeContainer"><code>Loading min.js bundle contents...</code></pre>
+                    </div>
+                </div>
+
+                <!-- Quick Usage Guide -->
+                <div class="card-custom">
+                    <h4 class="fw-bold text-dark mb-3">
+                        <i class="bi bi-lightning-charge text-warning me-2"></i> How to Use the Downloaded min.js
+                    </h4>
+
+                    <h6 class="fw-bold text-dark mt-3">1. Plain HTML Script Tag</h6>
+                    <p class="text-secondary small">
+                        Place <code>min.js</code> in your project directory and load it directly:
+                    </p>
+                    <div class="p-3 bg-light border rounded font-monospace small mb-3">
+                        &lt;script type="module" src="./min.js"&gt;&lt;/script&gt;
+                    </div>
+
+                    <h6 class="fw-bold text-dark mt-3">2. In-Browser Module Import</h6>
+                    <div class="p-3 bg-light border rounded font-monospace small mb-3">
+&lt;script type="module"&gt;<br>
+&nbsp;&nbsp;import runOptions from "./min.js";<br><br>
+&nbsp;&nbsp;const enhancedAst = runOptions({<br>
+&nbsp;&nbsp;&nbsp;&nbsp;base: myTableAst,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;options: { showSearch: true, showSerial: true, showOptions: true },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;optionDefs: myOptionDefinitions<br>
+&nbsp;&nbsp;});<br>
+&nbsp;&nbsp;console.log(enhancedAst);<br>
+&lt;/script&gt;
+                    </div>
+
+                    <h6 class="fw-bold text-dark mt-3">3. Enterprise / Air-Gapped Environments</h6>
+                    <p class="text-secondary small mb-0">
+                        The downloaded <code>.zip</code> package contains everything needed to operate inside isolated intranets without external CDN dependencies.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p class="mb-1 text-white">json-renderers-run-options</p>
+            <small class="text-muted">Part of the KeshavSoft Declarative UI Architecture • MIT © 2026</small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Spotlight Follower
+        const spotlight = document.getElementById('spotlight');
+        window.addEventListener('mousemove', (e) => {
+            spotlight.style.left = e.clientX + 'px';
+            spotlight.style.top = e.clientY + 'px';
+        });
+
+        let cachedMinJs = "";
+
+        // Fetch min.js bundle content
+        async function loadBundleContent() {
+            const codeContainer = document.getElementById('codeContainer');
+            try {
+                const response = await fetch('../dist/min.js');
+                if (response.ok) {
+                    cachedMinJs = await response.text();
+                } else {
+                    throw new Error('Fetch failed with status ' + response.status);
+                }
+            } catch (err) {
+                // If fetch fails (e.g. running locally under file:// protocol without http server),
+                // fallback to a clean preloaded representation
+                cachedMinJs = `// json-renderers-run-options (Standalone Minified Bundle)
+// Version: 1.2.1 / V2 Engine
+// (c) 2026 KeshavSoft - MIT License
+var e=(e)=>Array.isArray(e)?e:[e],t=(e,t,n)=>{e[t]=n;},n={set:t,push:(t,n,r)=>{t[n].push(...e(r));},unshift:(t,n,r)=>{t[n].unshift(...e(r));}};
+const instructionsWithTargets=(e=[],t)=>e.filter(({destinationPath:e})=>{const n=e?.jsonPath;return!(typeof n!="string"||!n.trim())&&query(t,n,{returnArray:!0}).length>0;});
+export const runOptions=({base:e,options:t={},optionDefs:n={},showLog:r=!1}={})=>{if(!e)return e;const o={base:e};if(t.showSearch&&n.search){const s=instructionsWithTargets(n.search,e);r&&console.log("[runOptions:search]",s),runSingleInstructions(s,o,r);}if((t.showSerial||t.serial)&&n.serial){const s=instructionsWithTargets(n.serial,e);r&&console.log("[runOptions:serial]",s),runSingleInstructions(s,o,r);}if((t.showOptions||t.options)&&n.options){const s=instructionsWithTargets(n.options,e);r&&console.log("[runOptions:options]",s),runSingleInstructions(s,o,r);}return e;};
+export default runOptions;`;
+            }
+
+            codeContainer.textContent = cachedMinJs;
+            const sizeKb = (new Blob([cachedMinJs]).size / 1024).toFixed(1);
+            const lineCount = cachedMinJs.split('\n').length;
+            document.getElementById('fileStatsBadge').innerText = `${sizeKb} KB • ${lineCount} lines`;
+        }
+
+        // Copy min.js
+        function copyMinJs() {
+            if (!cachedMinJs) return;
+            navigator.clipboard.writeText(cachedMinJs).then(() => {
+                triggerConfetti();
+                const btn = document.getElementById('btnCopyMain');
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check2-circle me-1"></i> Copied Successfully!';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-success');
+                setTimeout(() => {
+                    btn.innerHTML = orig;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-primary');
+                }, 2500);
+            });
+        }
+
+        // Download .js File
+        function downloadJsFile() {
+            triggerConfetti();
+            const blob = new Blob([cachedMinJs], { type: 'application/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'json-renderers-run-options.min.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Download ZIP Archive via JSZip
+        async function downloadZipBundle() {
+            const btn = document.getElementById('btnZipDownload');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Packaging ZIP...';
+            btn.disabled = true;
+
+            try {
+                const zip = new JSZip();
+
+                // 1. Add min.js
+                zip.file("min.js", cachedMinJs);
+
+                // 2. Add sample HTML demo
+                const sampleHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>json-renderers-run-options Demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+  <div class="container">
+    <h2 class="mb-3">json-renderers-run-options Offline Demo</h2>
+    <p class="text-muted">Using the standalone min.js bundle.</p>
+    <div id="output"></div>
+  </div>
+  <script type="module">
+    import runOptions from "./min.js";
+    console.log("Loaded runOptions:", runOptions);
+  <\/script>
+</body>
+</html>`;
+                zip.file("index.html", sampleHtml);
+
+                // 3. Add README
+                const readmeContent = `# json-renderers-run-options Bundle
+
+Pure declarative feature and option instruction runner for JSON renderers in the KeshavSoft ecosystem.
+
+## Contents
+- min.js: Pre-bundled minified production distribution
+- index.html: Quick start demo
+
+## License
+MIT (c) KeshavSoft`;
+                zip.file("README.md", readmeContent);
+
+                // 4. Add package.json
+                const pkgJson = JSON.stringify({
+                    name: "json-renderers-run-options-bundle",
+                    version: "1.2.1",
+                    description: "Standalone minified bundle for json-renderers-run-options",
+                    main: "min.js",
+                    license: "MIT"
+                }, null, 2);
+                zip.file("package.json", pkgJson);
+
+                // Generate ZIP
+                const content = await zip.generateAsync({ type: "blob" });
+                triggerConfetti();
+
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "json-renderers-run-options-bundle.zip";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error("ZIP Generation error:", err);
+                alert("Could not generate ZIP bundle: " + err.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Toggle Wrap
+        let isWrapped = false;
+        function toggleWrap() {
+            const pre = document.getElementById('codeContainer');
+            const btn = document.getElementById('btnWrap');
+            isWrapped = !isWrapped;
+            if (isWrapped) {
+                pre.classList.add('wrap-text');
+                btn.innerHTML = '<i class="bi bi-text-left"></i> No Wrap';
+            } else {
+                pre.classList.remove('wrap-text');
+                btn.innerHTML = '<i class="bi bi-text-wrap"></i> Wrap Text';
+            }
+        }
+
+        // Select All Code
+        function selectAllCode() {
+            const code = document.getElementById('codeContainer');
+            const range = document.createRange();
+            range.selectNodeContents(code);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+
+        // Confetti trigger
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 60,
+                    spread: 60,
+                    origin: { y: 0.7 }
+                });
+            }
+        }
+
+        // Init on load
+        document.addEventListener('DOMContentLoaded', loadBundleContent);
+    </script>
+</body>
+
+</html>

@@ -13,6 +13,21 @@
 
 Part of the **KeshavSoft Declarative UI Architecture** (Feature & Optional AST Enhancer).
 
+---
+
+## 🌐 Live Interactive Documentation & Demos
+
+Visit the official online documentation, interactive visualizer, and bundle downloaders:
+
+- **Live Interactive Documentation (Home):** [https://keshavsoft.github.io/json-renderers-run-options/](https://keshavsoft.github.io/json-renderers-run-options/)
+- **📦 Copy min.js & Download ZIP Bundle:** [https://keshavsoft.github.io/json-renderers-run-options/pages/bundle.html](https://keshavsoft.github.io/json-renderers-run-options/pages/bundle.html)
+- **The Story & Purpose:** [https://keshavsoft.github.io/json-renderers-run-options/pages/the-story.html](https://keshavsoft.github.io/json-renderers-run-options/pages/the-story.html)
+- **Architecture & V2 Runtime Deep Dive:** [https://keshavsoft.github.io/json-renderers-run-options/pages/architecture.html](https://keshavsoft.github.io/json-renderers-run-options/pages/architecture.html)
+- **API Reference Guide:** [https://keshavsoft.github.io/json-renderers-run-options/pages/api-guide.html](https://keshavsoft.github.io/json-renderers-run-options/pages/api-guide.html)
+- **Samples & Code Recipes:** [https://keshavsoft.github.io/json-renderers-run-options/pages/samples-showcase.html](https://keshavsoft.github.io/json-renderers-run-options/pages/samples-showcase.html)
+
+---
+
 ## 📖 What is the Purpose of this Repo?
 
 In imperative UI architectures, enabling optional features on components (such as a **Search Bar**, a **Serial Number (#)** column, or **Row Action Buttons** in a data table) requires writing conditional `if/else` logic, DOM loops, and manual element insertions.
